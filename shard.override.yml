@@ -12,3 +12,6 @@ dependencies:
   authentic:
     github: luckyframework/authentic
     branch: master
+  carbon:
+    github: luckyframework/carbon
+    branch: master
