@@ -15,3 +15,6 @@ dependencies:
   carbon:
     github: luckyframework/carbon
     branch: master
+  carbon_sendgrid_adapter:
+    github: luckyframework/carbon_sendgrid_adapter
+    branch: master
