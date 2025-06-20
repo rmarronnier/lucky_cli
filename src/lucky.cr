@@ -155,9 +155,8 @@ elsif generate_custom_app
   # already running
 elsif task_compiled?
   exit Process.run(
-    task_path.to_s,
-    ARGV.skip(1),
-    shell: true,
+    command: task_path.to_s,
+    args: ARGV.skip(1).to_a,
     input: STDIN,
     output: STDOUT,
     error: STDERR
@@ -165,9 +164,8 @@ elsif task_compiled?
 elsif task_not_compiled?
   crystal_command = {% if flag?(:windows) %}"crystal.exe"{% else %}"crystal"{% end %}
   exit Process.run(
-    crystal_command,
-    [task_path(".cr").to_s] + ARGV.skip(1),
-    shell: true,
+    command: crystal_command,
+    args: [task_path(".cr").to_s] + ARGV.skip(1).to_a,
     input: STDIN,
     output: STDOUT,
     error: STDERR

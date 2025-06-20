@@ -48,7 +48,34 @@ module LuckyCli::GeneratorHelpers
     end
   end
 
-  def run_command(command)
+  def run_command(command : String, args : Array(String) = [] of String)
+    within_project do
+      result = Process.run(
+        command: command,
+        args: args,
+        output: :pipe,
+        error: :pipe
+      ) do |process|
+        # Stream output in real-time
+        spawn do
+          IO.copy(process.output, STDOUT)
+        end
+        spawn do
+          IO.copy(process.error, STDERR)
+        end
+      end
+
+      unless result.success?
+        raise "Command failed: #{command} #{args.join(" ")} (exit code: #{result.exit_code})"
+      end
+
+      result
+    end
+  end
+
+  # Deprecated: Use run_command with args array instead
+  @[Deprecated("Use run_command(command, args) for better security")]
+  def run_shell_command(command : String)
     within_project do
       Process.run command,
         shell: true,

@@ -29,6 +29,6 @@ module Api::Auth::RequireAuthToken
   # Tells the compiler that the current_user is not nil since we have checked
   # that the user is signed in
   private def current_user : User
-    current_user?.as(User)
+    current_user? || raise "BUG: current_user called but user is not authenticated"
   end
 end
