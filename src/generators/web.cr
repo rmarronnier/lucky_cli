@@ -109,7 +109,7 @@ class LuckyCli::Generators::Web
         /public/css
         /public/mix-manifest.json
         /node_modules
-        yarn-error.log
+        bun-error.log
         TEXT
       end
     end

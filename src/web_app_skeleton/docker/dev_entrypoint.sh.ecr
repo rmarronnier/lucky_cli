@@ -29,7 +29,7 @@ if ! [ -d bin ] ; then
 fi
 <%- if browser? -%>
 echo 'Installing npm packages...'
-yarn install
+bun install
 <%- end -%>
 if ! shards check ; then
   echo 'Installing shards...'

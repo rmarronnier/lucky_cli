@@ -174,7 +174,8 @@ e2e-base-image:
      && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
      && apt-get update \
      && apt-get install -y nodejs \
-     && npm install --global yarn \
+     && curl -fsSL https://bun.sh/install | bash \
+     && mv /root/.bun/bin/bun /usr/local/bin/ \
      && wget -O /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
      && apt-get install -y /tmp/google-chrome-stable_current_amd64.deb
     ENV CHROME_BIN=/usr/bin/google-chrome
@@ -186,8 +187,8 @@ e2e-image:
     RUN lucky init.custom test-project
     WORKDIR /workdir/test-project
     RUN crystal tool format --check src spec config
-    RUN yarn install --no-progress \
-     && yarn dev \
+    RUN bun install \
+     && bun run dev \
      && shards install
     RUN crystal build src/start_server.cr
     RUN crystal build src/test_project.cr
@@ -199,8 +200,8 @@ e2e-image-noauth:
     FROM +e2e-base-image
     RUN lucky init.custom test-project --no-auth
     WORKDIR /workdir/test-project
-    RUN yarn install --no-progress \
-     && yarn dev \
+    RUN bun install \
+     && bun run dev \
      && shards install
     RUN lucky gen.action.api Api::Users::Show \
      && lucky gen.action.browser Users::Show \
@@ -250,8 +251,8 @@ e2e-image-security:
     RUN lucky init.custom test-project --with-sec-test
     WORKDIR /workdir/test-project
     RUN crystal tool format --check src spec config
-    RUN yarn install --no-progress \
-     && yarn dev \
+    RUN bun install \
+     && bun run dev \
      && shards install
     ENV LUCKY_ENV=test
     ENV RUN_SEC_TESTER_SPECS=1
@@ -282,7 +283,8 @@ WEEKLY_IMAGE:
      && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
      && apt-get update \
      && apt-get install -y nodejs \
-     && npm install --global yarn \
+     && curl -fsSL https://bun.sh/install | bash \
+     && mv /root/.bun/bin/bun /usr/local/bin/ \
      && wget -O /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
      && apt-get install -y /tmp/google-chrome-stable_current_amd64.deb
     ENV CHROME_BIN=/usr/bin/google-chrome
@@ -292,8 +294,8 @@ WEEKLY_IMAGE:
     COPY $shard_file ./
     ENV SHARDS_OVERRIDE=/workdir/test-project/$shard_file
     RUN crystal tool format --check src spec config
-    RUN yarn install --no-progress \
-     && yarn dev \
+    RUN bun install \
+     && bun run dev \
      && shards install
     RUN crystal build src/start_server.cr
     RUN crystal build src/test_project.cr

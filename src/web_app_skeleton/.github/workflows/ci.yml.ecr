@@ -61,24 +61,29 @@ jobs:
           crystal: ${{ matrix.crystal_version }}
 
 <%- if browser? -%>
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
-      - name: Set up Yarn cache
+      - name: Get bun cache directory path
+        id: bun-cache-dir-path
+        run: echo "dir=$(bun pm cache)" >> $GITHUB_OUTPUT
+
+      - name: Set up Bun cache
         uses: actions/cache@v4
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ${{ steps.bun-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-bun-
 
       - name: Set up Node cache
         uses: actions/cache@v4
         id: node-cache # use this to check for `cache-hit` (`steps.node-cache.outputs.cache-hit != 'true'`)
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
             ${{ runner.os }}-node-
 <%- end -%>
@@ -98,11 +103,11 @@ jobs:
         run: shards check || shards install
 
 <%- if browser? -%>
-      - name: Install yarn packages
+      - name: Install bun packages
         if: steps.node-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile --no-progress
+        run: bun install --frozen-lockfile
       - name: Compiling assets
-        run: yarn prod
+        run: bun run prod
 <%- end -%>
       - name: Build lucky_tasks
         run: crystal build tasks.cr -o ./lucky_tasks

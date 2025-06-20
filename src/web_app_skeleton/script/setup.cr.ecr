@@ -8,10 +8,10 @@ print_done
 
 <%- if browser? -%>
 notice "Installing node dependencies"
-run_command "yarn", "install", "--no-progress"
+run_command "bun", "install"
 
 notice "Compiling assets"
-run_command "yarn", "dev"
+run_command "bun", "run", "dev"
 
 print_done
 <%- end -%>
